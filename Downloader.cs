@@ -48,29 +48,32 @@ namespace EdgarC
         {
             var results = new List<FormLink>();
 
-            foreach (var line in content.Split('\n'))
+            if (!string.IsNullOrEmpty(content))
             {
-                var parts = line.Split('|');
-
-                if (parts.Length == 5)
+                foreach (var line in content.Split('\n'))
                 {
-                    try
-                    {
-                        results.Add(new FormLink()
-                        {
-                            SECNumber = Int64.Parse(parts[0]),
-                            CompanyName = parts[1],
-                            FormType = parts[2],
-                            Date = DateTime.Parse(parts[3]),
-                            Path = parts[4]
-                        });
+                    var parts = line.Split('|');
 
-                    }
-                    catch (Exception ex)
+                    if (parts.Length == 5)
                     {
-                        //Console.WriteLine($"Parse error for line {line}: {ex}");
-                        //Console.ReadKey();
-                        //_log.Warn($"Parse error for line {line}: {ex}");
+                        try
+                        {
+                            results.Add(new FormLink()
+                            {
+                                SECNumber = Int64.Parse(parts[0]),
+                                CompanyName = parts[1],
+                                FormType = parts[2],
+                                Date = DateTime.Parse(parts[3]),
+                                Path = parts[4]
+                            });
+
+                        }
+                        catch (Exception ex)
+                        {
+                            //Console.WriteLine($"Parse error for line {line}: {ex}");
+                            //Console.ReadKey();
+                            //_log.Warn($"Parse error for line {line}: {ex}");
+                        }
                     }
                 }
             }

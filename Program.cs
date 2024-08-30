@@ -15,6 +15,14 @@ namespace EdgarC
     {
         static void Main(string[] args)
         {
+
+
+            /* need to look at this for tag reading: https://github.com/Arelle/Arelle
+
+            */
+
+
+
             ILog _log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
             var _ui = _log;
             //var logRepository = LogManager.GetRepository(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.ToString());
@@ -23,8 +31,11 @@ namespace EdgarC
             //ILog _log = (ILog)LogManager.GetLogger("console");
             //ILog _ui = (ILog)LogManager.GetLogger("ui");
 
+            var _configurationAdapter = new DBu.ConfigurationAdapter();
+            var _dbuProvider = new DBu.DBuMongoProvider(_configurationAdapter);
+
             var downloader = new Downloader(new ConfigurationAdapter(), new FileProvider(), _log);
-            var em = new EdgarCManager(downloader, _log, _ui);
+            var em = new EdgarCManager(downloader, _log, _ui, _dbuProvider);
 
             var menu = new ConsoleMenu(args, level: 0)
                 .Add("Search Companies", () =>

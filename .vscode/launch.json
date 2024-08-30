@@ -9,7 +9,7 @@
 			"type": "coreclr",
 			"request": "launch",
 			"preLaunchTask": "build",
-			"program": "${workspaceFolder}/bin/Debug/netcoreapp2.1/EdgarC.dll",
+			"program": "${workspaceFolder}/bin/Debug/net8/EdgarC.dll",
 			"args": [],
 			"cwd": "${workspaceFolder}",
 			"console": "integratedTerminal",

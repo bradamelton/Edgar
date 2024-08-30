@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using DBu;
 using log4net;
 using log4net.Core;
 
@@ -12,12 +13,14 @@ namespace EdgarC
         private readonly IDownloader _downloader;
         private readonly ILog _log;
         private readonly ILog _ui;
+        private readonly IDBuProvider _dbuProvider;
 
-        public EdgarCManager(IDownloader downloader, ILog log, ILog ui)
+        public EdgarCManager(IDownloader downloader, ILog log, ILog ui, IDBuProvider dbuProvider)
         {
             _downloader = downloader;
             _log = log;
             _ui = ui;
+            _dbuProvider = dbuProvider;
         }
 
         public void DownloadQuarterCurrent()
@@ -30,7 +33,7 @@ namespace EdgarC
         public void DownloadQuarter(int year, int quarter)
         {
 
-            var results = _downloader.GetFormList(2020, 2).Result;
+            var results = _downloader.GetFormList(year, quarter).Result;
 
             var companies = new List<Company>();
 
@@ -39,11 +42,13 @@ namespace EdgarC
                 var result = results.FirstOrDefault(res => res.SECNumber == r);
 
                 var c = new Company();
+                _dbuProvider.Load(c, new Dictionary<string, object>() { { "SECNumber", r } });
 
-                if (!c.Load(new Dictionary<string, object>() { { "SECNumber", r } }))
+                if (!c.Exists)
                 {
                     c = result.GetCompany();
-                    c.Save();
+
+                    _dbuProvider.Save(c);
                     _ui.Info("+");
                 }
                 else
@@ -88,14 +93,18 @@ namespace EdgarC
 
         public List<Company> CompanySearch(string search)
         {
-            var q = Company.GetQueryable<Company>();
-            Console.WriteLine($"Count: {q.Count()}");
-            var a = q.Skip(10).First();
-            Console.WriteLine($"First: {a.Name}");
+            var q = _dbuProvider.GetQueryable<Company>();
 
-            var b = q.Where(c => c.Name.ToUpper().Contains(search.ToUpper())).ToList();
+            var count = q.Count();
+            Console.WriteLine($"Count: {count}");
 
-            return Company.GetQueryable<Company>().Where(c => c.Name.ToUpper().Contains(search.ToUpper())).ToList();
+            if (count > 0)
+            {
+                var a = q.Skip(10).First();
+                Console.WriteLine($"First: {a.Name}");
+            }
+
+            return q.Where(c => c.Name.ToUpper().Contains(search.ToUpper())).ToList();
         }
     }
 }

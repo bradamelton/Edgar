@@ -16,9 +16,5 @@ namespace EdgarC
         public object TickerId { get; set; }
 
         public Company() { }
-        public Company(Int64 secNumber)
-        {
-            this.Load(new Dictionary<string, object>() { { "SECNumber", secNumber } });
-        }
     }
 }
